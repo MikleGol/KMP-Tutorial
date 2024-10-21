@@ -11,7 +11,11 @@ kotlin {
             }
         }
     }
-    
+
+    val iosX64 = iosX64()
+    val iosArm64 = iosArm64()
+    val iosSimulatorArm64 = iosSimulatorArm64()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -24,11 +28,33 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
-            //put your multiplatform dependencies here
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.core)
+            }
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
+
+        val androidMain by getting{
+            dependencies{
+                implementation(libs.androidx.lifecycle.viewmodel.ktx)
+            }
+        }
+
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64.compilations["main"].defaultSourceSet.dependsOn(this)
+            iosArm64.compilations["main"].defaultSourceSet.dependsOn(this)
+            iosSimulatorArm64.compilations["main"].defaultSourceSet.dependsOn(this)
+
+            dependencies {
+                // ваші iOS залежності
+            }
         }
     }
 }
